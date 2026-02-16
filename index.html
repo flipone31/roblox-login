@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Playbox — Sign In</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <a class="brand" href="#">
+          <img src="assets/logo.svg" alt="Playbox" />
+          <span>Playbox</span>
+        </a>
+      </div>
+    </header>
+
+    <main class="container main-grid">
+      <section class="hero">
+        <div class="hero-content">
+          <h1>Play. Create. Share.</h1>
+          <p>Discover millions of player-created experiences and join the fun.</p>
+        </div>
+        <div class="hero-illustration" aria-hidden="true"></div>
+      </section>
+
+      <aside class="auth-card">
+        <form id="loginForm" class="login-form" novalidate>
+          <h2>Sign In</h2>
+          <label>
+            <span class="visually-hidden">Username or email</span>
+            <input id="user" name="user" type="text" placeholder="Username or email" required />
+          </label>
+
+          <label>
+            <span class="visually-hidden">Password</span>
+            <input id="pass" name="pass" type="password" placeholder="Password" required />
+          </label>
+
+          <div class="options">
+            <label class="checkbox">
+              <input type="checkbox" id="keep" /> Keep me signed in
+            </label>
+            <a class="link" href="#">Forgot password?</a>
+          </div>
+
+          <button id="submitBtn" class="btn primary" type="submit">Sign In</button>
+
+          <div class="divider">OR</div>
+
+          <button type="button" class="btn ghost">Sign in with SSO</button>
+
+          <p class="signup">New here? <a href="#">Create an account</a></p>
+
+          <div id="formMessage" class="form-message" aria-live="polite"></div>
+        </form>
+      </aside>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

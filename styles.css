@@ -1,0 +1,41 @@
+:root{
+  --bg:#f2f5f7;
+  --card:#ffffff;
+  --accent:#e11d2b;
+  --muted:#6b7280;
+  --radius:10px;
+  --max-width:1100px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial,sans-serif;margin:0;background:var(--bg);color:#111}
+.container{max-width:var(--max-width);margin:0 auto;padding:24px}
+.topbar{background:transparent;padding:12px 0}
+.topbar-inner{display:flex;align-items:center}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;font-weight:700}
+.brand img{width:40px;height:40px}
+.main-grid{display:grid;grid-template-columns:1fr 420px;gap:32px;align-items:stretch;padding-top:16px;padding-bottom:40px}
+.hero{background:linear-gradient(180deg,#ffffff 0%, #fbfcfd 100%);border-radius:var(--radius);padding:48px;display:flex;flex-direction:column;justify-content:center}
+.hero-content h1{font-size:36px;margin:0 0 12px}
+.hero-content p{color:var(--muted);margin:0 0 24px}
+.hero-illustration{height:220px;border-radius:8px;background:linear-gradient(135deg,#ffdede,#ffd6b8);box-shadow:0 8px 24px rgba(0,0,0,0.06);margin-top:18px}
+.auth-card{background:var(--card);border-radius:var(--radius);padding:28px;box-shadow:0 8px 30px rgba(15,23,42,0.06)}
+.login-form{display:flex;flex-direction:column;gap:14px}
+.login-form h2{margin:0 0 6px}
+label{display:block}
+input[type="text"],input[type="password"]{width:100%;padding:12px 14px;border:1px solid #e6e8eb;border-radius:8px;font-size:14px}
+.options{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted)}
+.checkbox{display:flex;align-items:center;gap:8px}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 14px;border-radius:8px;border:1px solid transparent;cursor:pointer;font-weight:600}
+.btn.primary{background:var(--accent);color:white}
+.btn.ghost{background:transparent;border:1px solid #e6e8eb;color:#111}
+.divider{text-align:center;color:var(--muted);font-size:13px;padding:8px 0}
+.signup{font-size:13px;color:var(--muted);margin:8px 0 0}
+.signup a{color:var(--accent);text-decoration:none}
+.form-message{margin-top:6px;color:var(--accent);font-size:13px;min-height:20px}
+.visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
+
+@media (max-width:900px){
+  .main-grid{grid-template-columns:1fr;gap:18px;padding:16px}
+  .hero-illustration{height:160px}
+}
