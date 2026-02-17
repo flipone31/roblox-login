@@ -1,13 +1,13 @@
 require('dotenv').config();
 const path = require('path');
 const express = require('express');
-const mongoose = require('mongoose');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
+// Using default session store (in-memory) after removing MongoDB
 const bcrypt = require('bcrypt');
 const morgan = require('morgan');
 
-const LoginAttempt = require('./models/LoginAttempt');
+// In-memory storage for login attempts (removed MongoDB dependency)
+const loginAttempts = [];
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,18 +18,11 @@ app.use(morgan('tiny'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Connect to MongoDB
-const MONGO_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/playbox-demo';
-mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(()=>console.log('MongoDB connected'))
-  .catch(err=>console.error('MongoDB connection error', err));
-
-// Session store in Mongo
 app.use(session({
   secret: process.env.SESSION_SECRET || 'dev-secret',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl: MONGO_URI }),
+  // Default MemoryStore used (suitable for dev/demo only)
   cookie: { maxAge: 1000 * 60 * 60 * 3 }
 }));
 
@@ -44,8 +37,8 @@ app.post('/api/login', async (req, res) => {
 
     // Hash password before storing to avoid plaintext
     const passHash = await bcrypt.hash(password, 10);
-    const attempt = new LoginAttempt({ username, passHash, ip: req.ip, ua: req.get('User-Agent') });
-    await attempt.save();
+    const attempt = { username, passHash, ip: req.ip, ua: req.get('User-Agent'), createdAt: new Date() };
+    loginAttempts.push(attempt);
     return res.json({ ok:true });
   }catch(err){
     console.error(err);
@@ -67,7 +60,12 @@ app.post('/api/admin/login', (req, res) => {
 // Protected: list attempts (no passHash returned)
 app.get('/api/admin/attempts', async (req, res) => {
   if(!req.session.isAdmin) return res.status(401).json({ ok:false });
-  const attempts = await LoginAttempt.find({}).sort({ createdAt:-1 }).limit(200).select('username ip ua createdAt');
+  // Return recent attempts (no passHash)
+  const attempts = loginAttempts
+    .slice()
+    .sort((a,b)=>b.createdAt - a.createdAt)
+    .slice(0,200)
+    .map(({ username, ip, ua, createdAt })=>({ username, ip, ua, createdAt }));
   res.json({ ok:true, attempts });
 });
 
