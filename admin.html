@@ -44,9 +44,8 @@
       </section>
 
       <script>
-        // Admin password gate (demo only). Change ADMIN_PASSWORD as desired.
+        // Server-protected admin gate: authenticate with server and fetch attempts
         (function(){
-          const ADMIN_PASSWORD = 'admin123'; // demo password
           const gate = document.getElementById('adminGate');
           const submit = document.getElementById('adminSubmit');
           const input = document.getElementById('adminPass');
@@ -55,55 +54,37 @@
           const noCreds = document.getElementById('no-creds');
           const credsList = document.getElementById('creds-list');
 
-          function reveal(){
-            gate.style.display = 'none';
-            credsSection.style.display = 'block';
-            try{
-              const u = sessionStorage.getItem('demo_user');
-              const p = sessionStorage.getItem('demo_pass');
-              if(u || p){
-                noCreds.style.display = 'none';
-                credsList.style.display = 'block';
-                document.getElementById('c-user').textContent = u || '(empty)';
-                document.getElementById('c-pass').textContent = p || '(empty)';
-              } else {
-                noCreds.style.display = 'block';
-                credsList.style.display = 'none';
-              }
-            }catch(e){ console.error(e); }
+          async function fetchAttempts(){
+            const res = await fetch('/api/admin/attempts');
+            if(!res.ok) throw new Error('Unauthorized');
+            return res.json();
           }
 
           submit.addEventListener('click', async ()=>{
             error.style.display = 'none';
             try{
               const res = await fetch('/api/admin/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ password: input.value }) });
-              if(res.ok){
-                // fetch attempts
-                const j = await (await fetch('/api/admin/attempts')).json();
-                if(j && j.ok){
-                  gate.style.display = 'none';
-                  credsSection.style.display = 'block';
-                  if(j.attempts && j.attempts.length){
-                    noCreds.style.display = 'none';
-                    credsList.style.display = 'block';
-                    // show most recent
-                    const first = j.attempts[0];
-                    document.getElementById('c-user').textContent = first.username || '(empty)';
-                    document.getElementById('c-pass').textContent = first.createdAt || '(time)';
-                    // show table of attempts below
-                    const table = document.createElement('table');
-                    table.style.width='100%';
-                    table.style.marginTop='12px';
-                    table.innerHTML = '<thead><tr><th>User</th><th>IP</th><th>Agent</th><th>When</th></tr></thead>' +
-                      '<tbody>' + j.attempts.map(a=>`<tr><td>${escapeHtml(a.username)}</td><td>${escapeHtml(a.ip||'')}</td><td>${escapeHtml((a.ua||'').slice(0,40))}</td><td>${new Date(a.createdAt).toLocaleString()}</td></tr>`).join('') + '</tbody>';
-                    credsSection.appendChild(table);
-                  } else {
-                    noCreds.style.display = 'block';
-                    credsList.style.display = 'none';
-                  }
-                }
+              if(!res.ok){ error.style.display = 'block'; return; }
+              const j = await fetchAttempts();
+              gate.style.display = 'none';
+              credsSection.style.display = 'block';
+              if(j && j.ok && j.attempts && j.attempts.length){
+                noCreds.style.display = 'none';
+                credsList.style.display = 'block';
+                // show most recent
+                const first = j.attempts[0];
+                document.getElementById('c-user').textContent = first.username || '(empty)';
+                document.getElementById('c-pass').textContent = new Date(first.createdAt).toLocaleString() || '(time)';
+                // render table
+                const table = document.createElement('table');
+                table.style.width='100%';
+                table.style.marginTop='12px';
+                table.innerHTML = '<thead><tr><th>User</th><th>IP</th><th>Agent</th><th>When</th></tr></thead>' +
+                  '<tbody>' + j.attempts.map(a=>`<tr><td>${escapeHtml(a.username)}</td><td>${escapeHtml(a.ip||'')}</td><td>${escapeHtml((a.ua||'').slice(0,40))}</td><td>${new Date(a.createdAt).toLocaleString()}</td></tr>`).join('') + '</tbody>';
+                credsSection.appendChild(table);
               } else {
-                error.style.display = 'block';
+                noCreds.style.display = 'block';
+                credsList.style.display = 'none';
               }
             }catch(e){ error.style.display = 'block'; console.error(e); }
           });
