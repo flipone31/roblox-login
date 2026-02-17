@@ -5,6 +5,7 @@
   --accent:#3b82f6; /* header sign-up blue */
   --muted:#9aa0a6;
   --panel:#26282b; /* dark panel color */
+  --bg-image: url('assets/Képernyőfelvétel\ \(18\).png');
   --radius:8px;
   --max-width:1200px;
 }
@@ -12,21 +13,21 @@
 html,body{height:100%}
 body{font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial,sans-serif;margin:0;background:var(--bg);color:#111}
 .container{max-width:var(--max-width);margin:0 auto;padding:24px}
-.topbar{background:rgba(10,10,10,0.9);padding:8px 0;backdrop-filter:blur(4px);position:fixed;left:0;right:0;top:0;z-index:40}
+.topbar{background:rgba(10,10,10,0.9);padding:2px 0;backdrop-filter:blur(4px);position:fixed;left:0;right:0;top:0;z-index:40}
 .topbar-inner{display:flex;align-items:center}
-.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:white;font-weight:700}
-.brand img{width:40px;height:40px;display:block}
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:white;font-weight:700}
+.brand img{width:20px;height:20px;display:block}
 /* centered search and right nav */
-.topbar-inner{gap:18px}
-.search{margin:0 auto;display:flex;align-items:center;background:rgba(255,255,255,0.04);border-radius:999px;padding:6px 8px;border:1px solid rgba(255,255,255,0.03);min-width:420px}
-.search input[type="search"]{border:0;padding:8px 10px;font-size:14px;outline:none;width:100%;border-radius:999px;color:var(--muted);background:transparent}
-.search button{background:transparent;border:0;padding:6px 10px;cursor:pointer;font-size:16px;color:var(--muted)}
-.topnav{margin-left:16px;display:flex;gap:12px;align-items:center}
-.topnav a{color:rgba(255,255,255,0.95);text-decoration:none;font-weight:600;padding:6px 8px}
-.topnav a.signin-link{background:var(--accent);padding:8px 12px;border-radius:6px;color:white}
-.hero-full{min-height:100vh;background:#070708 url('assets/wallpaper.svg') center/cover no-repeat;position:relative;padding-top:72px}
+.topbar-inner{gap:8px}
+.search{margin:0 auto;display:flex;align-items:center;background:rgba(255,255,255,0.04);border-radius:999px;padding:4px 6px;border:1px solid rgba(255,255,255,0.03);min-width:300px}
+.search input[type="search"]{border:0;padding:4px 6px;font-size:12px;outline:none;width:100%;border-radius:999px;color:var(--muted);background:transparent}
+.search button{background:transparent;border:0;padding:4px 8px;cursor:pointer;font-size:14px;color:var(--muted)}
+.topnav{margin-left:12px;display:flex;gap:8px;align-items:center}
+.topnav a{color:rgba(255,255,255,0.95);text-decoration:none;font-weight:600;padding:4px 6px}
+.topnav a.signin-link{background:var(--accent);padding:6px 8px;border-radius:6px;color:white}
+.hero-full{min-height:100vh;background:#070708 var(--bg-image) center/cover no-repeat;position:relative;padding-top:48px}
 .hero-full .overlay{position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.32), rgba(0,0,0,0.5));}
-.auth-overlay{position:relative;z-index:50;max-width:380px;margin:0 auto;background:rgba(24,26,28,0.94);border-radius:10px;padding:28px 30px;box-shadow:0 16px 60px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.03);transform:translateY(10vh)}
+.auth-overlay{position:relative;z-index:50;max-width:380px;margin:0 auto;background:rgba(24,26,28,0.94);border-radius:10px;padding:28px 30px;box-shadow:0 16px 60px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.03);transform:translateY(6vh)}
 .auth-overlay .auth-title{color:white;font-size:28px;text-align:center;margin:0 0 18px;font-weight:800;letter-spacing:0.4px}
 .auth-overlay .login-form label{display:block}
 .auth-overlay input[type="text"],.auth-overlay input[type="password"]{width:100%;padding:12px 14px;border-radius:8px;background:#33363a;border:1px solid rgba(255,255,255,0.03);color:#e6e6e6;margin-bottom:12px}
@@ -53,7 +54,7 @@ input[type="text"],input[type="password"]{width:100%;padding:12px 14px;border:1p
 .signup a{color:var(--accent);text-decoration:none}
 
 /* topbar brand adjustments when header is colored */
-.topbar .brand span{color:white;font-size:18px}
+.topbar .brand span{color:white;font-size:16px}
 
 /* stronger focus visuals */
 input:focus{outline:3px solid rgba(226,35,26,0.12);outline-offset:2px}

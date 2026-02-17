@@ -25,15 +25,29 @@ document.addEventListener('DOMContentLoaded',()=>{
       return;
     }
 
-    // Simulate network/login
+    // POST login to server (stores hashed password in DB) - demo only
     const btn=document.getElementById('submitBtn');
     btn.disabled=true;btn.textContent='Signing in...';
-    setTimeout(()=>{
-      btn.disabled=false;btn.textContent='Sign In';
-      msg.style.color='green';
-      msg.textContent='Signed in successfully (demo). Redirecting...';
+    fetch('/api/login', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ username: user.value, password: pass.value })
+    }).then(r=>r.json()).then(data=>{
+      btn.disabled=false;btn.textContent='Log In';
+      if(data && data.ok){
+        msg.style.color='green';
+        msg.textContent='Signed in (demo).';
+      } else {
+        msg.style.color='crimson';
+        msg.textContent = data && data.message ? data.message : 'Sign in failed';
+      }
       setTimeout(()=>{ msg.textContent=''; },1200);
-    },1100);
+    }).catch(err=>{
+      btn.disabled=false;btn.textContent='Log In';
+      msg.style.color='crimson';
+      msg.textContent='Network error';
+      console.error(err);
+      setTimeout(()=>{ msg.textContent=''; },1200);
+    });
   });
   
   // small focus ripple for inputs
