@@ -23,7 +23,7 @@ async function initDb(){
   await dbClient.connect();
   const dbName = process.env.DB_NAME || 'roblox-login';
   const db = dbClient.db(dbName);
-  attemptsCol = db.collection('loginAttempts');
+  attemptsCol = db.collection('idk');
   // useful index for queries
   await attemptsCol.createIndex({ createdAt: -1 });
   console.log('Connected to MongoDB database:', dbName);
